@@ -2,6 +2,8 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
+#include <QGraphicsScene>
+#include <QGraphicsView>
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
@@ -20,8 +22,10 @@ private slots:
     void on_pauseButton_clicked();
     void on_stepButton_clicked();
 
+    void on_speedSlider_sliderMoved(int position);
+
 private:
     Ui::MainWindow *ui;
-
+    QGraphicsScene *scene;
 };
 #endif // MAINWINDOW_H
