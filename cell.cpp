@@ -46,7 +46,7 @@ Cell::Cell(const int x, const int y) {
 void Cell::mousePressEvent(QGraphicsSceneMouseEvent *event)
 {
 
-    qDebug() << "cell clicked!";
+    qDebug() << "cell clicked! Coordinates of cell: " << x_ << "," << y_;
 
     if(event->button() == Qt::RightButton){
         // cell dies or remains dead, if already dead.
@@ -107,14 +107,3 @@ void Cell::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWid
     painter->setBrush(b);
 }
 
-
-/**
-  Makes it so the == operator will have the behavior that you
-  expect when comparing points.
-  You can overload pretty much any operator in c++
-  @param first Point left hand side of the expression
-  @param other Point right hand side of the expression
-*/
-bool operator==(const Cell &first, const Cell &other) {
-  return first.x_ == other.x_ && first.y_ == other.y_;
-}

@@ -19,6 +19,7 @@ public:
     bool is_alive() const { return is_alive_; } // inline member function
     void set_next_turn_status(bool status){this->next_turn_status_ = status;}
     bool get_next_turn_status() const { return next_turn_status_; }
+    int get_total_alive() const {return total_alive_; }
 
     QRectF boundingRect() const override;
     QPainterPath shape() const override;
@@ -48,6 +49,8 @@ private:
   int x_;
   int y_;
 
+  static int total_alive_;
+
   bool next_turn_status_;
   bool is_alive_;
 
@@ -57,10 +60,7 @@ private:
   // Width and height are the same.
   static const int width_ = 15;
 
-  // if you declare the operator as a friend, then it isn't
-  // part of the object
-  // friend will let this method access the private fields
-  friend bool operator==(const Cell &first, const Cell &other);
+
 };  // Class cell
 
 
