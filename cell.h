@@ -14,8 +14,8 @@ class Cell : public QObject, public QGraphicsItem {
 public:
     Cell(const int x, const int y);  // constructor
 
-    int get_x() const { return x_; }  // inline member function
-    int get_y() const { return y_; }  // inline member function
+    int get_x() const { return (x_); }  // inline member function
+    int get_y() const { return (y_); }  // inline member function
     bool is_alive() const { return is_alive_; } // inline member function
     void set_is_alive(bool result) { this->is_alive_ = result ; } // inline member function
     void set_color(QColor color) { this->color_ = color; }

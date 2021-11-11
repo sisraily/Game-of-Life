@@ -46,7 +46,7 @@ Cell::Cell(const int x,const int y) {
 void Cell::mousePressEvent(QGraphicsSceneMouseEvent *event)
 {
 
-    qDebug() << "cell clicked! Coordinates of cell: " << x_ << "," << y_;
+    qDebug() << "cell clicked! Coordinates of cell: " << x_/15<< "," << y_/15;
     qDebug() << "Alive: " << this->is_alive();
     qDebug() << "Next turn alive: " << this->get_next_turn_status();
     if(event->button() == Qt::RightButton){

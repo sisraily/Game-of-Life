@@ -36,12 +36,13 @@ private:
 
 
     // Cells view will have a height of 20 cells and 10 rows of cells (200 total).
-    static const int row_cells_ = 10;
-    static const int col_cells_ = 20;
+    // y coordinates
+    static const int y_cells_ = 10;
+    // x coordinates
+    static const int x_cells_ = 20;
 
-    Bar * bars_[col_cells_][row_cells_];
-
-    Cell * cells_[col_cells_][row_cells_];
+    Bar * bars_[x_cells_][y_cells_];
+    Cell * cells_[x_cells_][y_cells_];
 
     int neighborsX_[8] = {1,-1,0,0,1,1,-1,-1};
     int neighborsY_[8] = {0,0,1,-1,1,-1,1,-1};

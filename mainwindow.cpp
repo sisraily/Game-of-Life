@@ -44,8 +44,8 @@ MainWindow::MainWindow(QWidget *parent)
     cellsView->setScene(cellsScene);
 
     // populate grid of cells.
-   for (int i = 0; i<row_cells_; i++){
-        for (int j = 0; j<col_cells_; j++){
+   for (int i = 0; i<x_cells_; i++){
+        for (int j = 0; j<y_cells_; j++){
             Cell * c = new Cell(i, j);
             this->cells_[i][j] = c;
             cellsScene->addItem(c);
@@ -54,8 +54,8 @@ MainWindow::MainWindow(QWidget *parent)
 
 
     int alive_tracker = 0;
-    for (int i = 0; i<row_cells_; i++){
-        for (int j = 0; j<col_cells_;j++){
+    for (int i = 0; i<x_cells_; i++){
+        for (int j = 0; j<y_cells_;j++){
             if(this->cells_[i][j]->is_alive()){
                 alive_tracker +=1;
                 //qDebug() << "X: " << cells_[i][j]->get_x() << ", Y: " << cells_[i][j]->get_y();
@@ -87,10 +87,10 @@ MainWindow::MainWindow(QWidget *parent)
     //scene->addItem(c2);
 
     /**************** Next values calculated here *******************/
-    for (int i = 0; i < row_cells_; i++){
-        for (int j = 0; j < col_cells_; j++){
+    for (int i = 0; i < x_cells_; i++){
+        for (int j = 0; j < y_cells_; j++){
             // edge cells
-            if (i == 0 || j == 0 || i == row_cells_-1 || j == col_cells_-1){
+            if (i == 0 || j == 0 || i == x_cells_-1 || j == y_cells_-1){
                 continue;
             }
             else {
@@ -123,22 +123,25 @@ MainWindow::MainWindow(QWidget *parent)
 //                  }
 
                   qDebug() << "X: " << neighbor_x << ", Y: " << neighbor_y;
-
+                  qDebug() << "Alive? " << cells_[neighbor_x][neighbor_y]->is_alive();
                   if (cells_[neighbor_x][neighbor_y]->is_alive()){
                       neighbor_live_count+=1;
                   }
-                  // rule 4: overpoulation. Cell automatically dies when more than 3 neighbors are live.
-                  if (neighbor_live_count > 3){
-                      cells_[i][j]->set_next_turn_status(false);
-                      break;
-                  }
+
                 }
-                // Underpoulation. Cells with less than 2 neighbors dies.
-                if (neighbor_live_count < 2){
+                // rule 4: overpoulation. Cell automatically dies when more than 3 neighbors are live.
+                if (neighbor_live_count > 3){
                     cells_[i][j]->set_next_turn_status(false);
                 }
+                // Underpoulation. Cells with less than 2 neighbors dies.
+                else if ((cells_[i][j]->is_alive()) && neighbor_live_count < 2){
+                    cells_[i][j]->set_next_turn_status(false);
+                }
+                else if ((cells_[i][j]->is_alive()) && ((neighbor_live_count == 2 ) || (neighbor_live_count ==3 ))){
+                    continue;
+                }
                 // Reproduction.
-                else if (!cells_[i][j]->is_alive() && neighbor_live_count == 3){
+                else if (!(cells_[i][j]->is_alive()) && neighbor_live_count == 3){
                     cells_[i][j]->set_next_turn_status(true);
                 }
             }
@@ -172,16 +175,25 @@ void MainWindow::on_stepButton_clicked()
 {
     qDebug() << "step button clicked default slot!";
     /**************** Start turn ******************************************/
-    for (int i = 0; i < row_cells_; i++){
-        for (int j = 0; j < col_cells_; j++){
+    for (int i = 0; i < x_cells_; i++){
+        for (int j = 0; j < y_cells_; j++){
 
              cells_[i][j]->set_is_alive(cells_[i][j]->get_next_turn_status());
-             int r = 217;
-             int g = 130;
-             int b = 181;
-             QColor c(r, g, b);
-             cells_[i][j]->set_color(c);
-
+             if (cells_[i][j]->is_alive()){
+                 int r = 217;
+                 int g = 130;
+                 int b = 181;
+                 QColor c(r, g, b);
+                 cells_[i][j]->set_color(c);
+             }
+             else{
+                 int r = 255;
+                 int g = 255;
+                 int b = 255;
+                 QColor c(r, g, b);
+                 cells_[i][j]->set_color(c);
+             }
+             cells_[i][j]->update();
         }
     }
 
