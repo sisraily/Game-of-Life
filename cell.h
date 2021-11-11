@@ -17,6 +17,9 @@ public:
     int get_x() const { return x_; }  // inline member function
     int get_y() const { return y_; }  // inline member function
     bool is_alive() const { return is_alive_; } // inline member function
+    void set_is_alive(bool result) { this->is_alive_ = result ; } // inline member function
+    void set_color(QColor color) { this->color_ = color; }
+
     void set_next_turn_status(bool status){this->next_turn_status_ = status;}
     bool get_next_turn_status() const { return next_turn_status_; }
     int get_total_alive() const {return total_alive_; }
@@ -39,6 +42,7 @@ protected:
     // Overridden so that we can modify the color and parameters of the cell, when clicked.
     // Protected so that we can use inheritance, if desired.
     void mousePressEvent(QGraphicsSceneMouseEvent *event) override;
+
 
 
 

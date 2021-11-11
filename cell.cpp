@@ -11,7 +11,7 @@
   @param x int x coordinate
   @param y int y coordinate
 */
-Cell::Cell(const int x, const int y) {
+Cell::Cell(const int x,const int y) {
 
   // randomly assigns a cell to alive or dead.
   int num = rand()%2;
@@ -32,8 +32,8 @@ Cell::Cell(const int x, const int y) {
       this->color_ = c;
   }
 
-  x_ = x;
-  y_ = y;
+  x_ = x*width_;
+  y_ = y*width_;
 
 }
 
@@ -47,7 +47,8 @@ void Cell::mousePressEvent(QGraphicsSceneMouseEvent *event)
 {
 
     qDebug() << "cell clicked! Coordinates of cell: " << x_ << "," << y_;
-
+    qDebug() << "Alive: " << this->is_alive();
+    qDebug() << "Next turn alive: " << this->get_next_turn_status();
     if(event->button() == Qt::RightButton){
         // cell dies or remains dead, if already dead.
         emit CellSelectedDies(this);

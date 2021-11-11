@@ -26,6 +26,9 @@ private slots:
     void on_stepButton_clicked();
     void on_speedSlider_sliderMoved(int position);
 
+    void CellSelectedLivesSlot(Cell *c);
+    void CellSelectedDiesSlot(Cell *c);
+
 private:
     Ui::MainWindow *ui;
     QGraphicsScene *cellsScene;
@@ -36,9 +39,9 @@ private:
     static const int row_cells_ = 10;
     static const int col_cells_ = 20;
 
-    Bar * bars_[row_cells_][col_cells_];
+    Bar * bars_[col_cells_][row_cells_];
 
-    Cell * cells_[row_cells_][col_cells_];
+    Cell * cells_[col_cells_][row_cells_];
 
     int neighborsX_[8] = {1,-1,0,0,1,1,-1,-1};
     int neighborsY_[8] = {0,0,1,-1,1,-1,1,-1};

@@ -40,34 +40,22 @@ MainWindow::MainWindow(QWidget *parent)
     // QGraphicsView settings
     QGraphicsView * cellsView = ui->cellsView;
     cellsScene = new QGraphicsScene;
+    cellsScene->setSceneRect(0,0,750,301);
     cellsView->setScene(cellsScene);
 
     // populate grid of cells.
-    // store this in a datastructure?
-    // cell number.
-    int count_x = 0;
-    int count_y = 0;
-
-    for (int j = 0; j<150; j = j+15){
-        for (int i = 0; i<300; i = i+15){
-            if (count_x == 20){
-                count_x = 0;
-            }
-            else {
-                count_x += 1;
-            }
+   for (int i = 0; i<row_cells_; i++){
+        for (int j = 0; j<col_cells_; j++){
             Cell * c = new Cell(i, j);
-            this->cells_[count_x][count_y] = c;
+            this->cells_[i][j] = c;
             cellsScene->addItem(c);
         }
-        count_y+=1;
-        qDebug() << count_x;
     }
 
-    /*** Causing program not to work at certain times ***/
+
     int alive_tracker = 0;
-    for (int i = 0; i < row_cells_; i++){
-        for (int j = 0; j < col_cells_; j++){
+    for (int i = 0; i<row_cells_; i++){
+        for (int j = 0; j<col_cells_;j++){
             if(this->cells_[i][j]->is_alive()){
                 alive_tracker +=1;
                 //qDebug() << "X: " << cells_[i][j]->get_x() << ", Y: " << cells_[i][j]->get_y();
@@ -101,48 +89,63 @@ MainWindow::MainWindow(QWidget *parent)
     /**************** Next values calculated here *******************/
     for (int i = 0; i < row_cells_; i++){
         for (int j = 0; j < col_cells_; j++){
-            int x_coord = cells_[i][j]->get_x()/15;
-            int y_coord = cells_[i][j]->get_y()/15;
-            int neighbor_live_count = 0;
-            for(int i=0;i<8;i++)
-            {
-              // We only need to know max if three neihbors are alive.
-              if (neighbor_live_count > 3){
-                  break;
-              }
+            // edge cells
+            if (i == 0 || j == 0 || i == row_cells_-1 || j == col_cells_-1){
+                continue;
+            }
+            else {
+                int x_coord = cells_[i][j]->get_x()/15;
+                int y_coord = cells_[i][j]->get_y()/15;
+                int neighbor_live_count = 0;
+                qDebug() << "Cell: " << x_coord << ", " << y_coord;
+                qDebug() << "Neighbors: ";
+                for(int i=0;i<8;i++)
+                {
+                  // We only need to know max if three neihbors are alive.
 
-              int neighbor_x = x_coord + neighborsX_[i];
-              qDebug() << "x coord " << x_coord;
-              // edge cases here, if below zero or more than last col
-              if (neighbor_x < 0){
-                  neighbor_x = col_cells_ -1;
-              } else if (neighbor_x == col_cells_){
-                  neighbor_x = 0;
-              }
 
-              int neighbor_y=y_coord+neighborsY_[i];
-              // edge cases here, if below zero or more than last row
-              if (neighbor_y < 0){
-                  neighbor_y = row_cells_ -1;
-              } else if (neighbor_y == row_cells_){
-                  neighbor_y = 0;
-              }
-              qDebug() << "X: " << neighbor_x << ", Y: " << neighbor_y;
+                  int neighbor_x = x_coord + neighborsX_[i];
+                  int neighbor_y = y_coord + neighborsY_[i];
 
-//              if (cells_[neighbor_x][neighbor_y]->is_alive()){
-//                  neighbor_live_count+=1;
-//              }
-//                  if(nx<n && nx>=0 && ny>=0 && ny<m)
-//                  {
-//                      do what you want to do
+//                  // edge cases here, if below zero or more than last col
+//                  if (neighbor_x < 0){
+//                      neighbor_x = col_cells_ -1;
+//                  } else if (neighbor_x == col_cells_){
+//                      neighbor_x = 0;
 //                  }
 
+//                  int neighbor_y=y_coord+neighborsY_[i];
+//                  // edge cases here, if below zero or more than last row
+//                  if (neighbor_y < 0){
+//                      neighbor_y = row_cells_ -1;
+//                  } else if (neighbor_y == row_cells_){
+//                      neighbor_y = 0;
+//                  }
+
+                  qDebug() << "X: " << neighbor_x << ", Y: " << neighbor_y;
+
+                  if (cells_[neighbor_x][neighbor_y]->is_alive()){
+                      neighbor_live_count+=1;
+                  }
+                  // rule 4: overpoulation. Cell automatically dies when more than 3 neighbors are live.
+                  if (neighbor_live_count > 3){
+                      cells_[i][j]->set_next_turn_status(false);
+                      break;
+                  }
+                }
+                // Underpoulation. Cells with less than 2 neighbors dies.
+                if (neighbor_live_count < 2){
+                    cells_[i][j]->set_next_turn_status(false);
+                }
+                // Reproduction.
+                else if (!cells_[i][j]->is_alive() && neighbor_live_count == 3){
+                    cells_[i][j]->set_next_turn_status(true);
+                }
             }
         }
     }
 
     /**************** END -- Next values calculated here *******************/
-
 
 }
 
@@ -168,6 +171,22 @@ void MainWindow::on_pauseButton_clicked()
 void MainWindow::on_stepButton_clicked()
 {
     qDebug() << "step button clicked default slot!";
+    /**************** Start turn ******************************************/
+    for (int i = 0; i < row_cells_; i++){
+        for (int j = 0; j < col_cells_; j++){
+
+             cells_[i][j]->set_is_alive(cells_[i][j]->get_next_turn_status());
+             int r = 217;
+             int g = 130;
+             int b = 181;
+             QColor c(r, g, b);
+             cells_[i][j]->set_color(c);
+
+        }
+    }
+
+    /**************** end turn ********************************************/
+
 }
 
 
@@ -176,5 +195,18 @@ void MainWindow::on_speedSlider_sliderMoved(int position)
     std::string s = "Speed: " + std::to_string(position);
     QString qs(s.c_str());
     ui->speedLabel->setText(qs);
+}
+
+void MainWindow::CellSelectedLivesSlot(Cell *c){
+    c->set_is_alive(true);
+    QColor color(217,130,181);
+    c->set_color(color);
+}
+
+
+void MainWindow::CellSelectedDiesSlot(Cell *c){
+    c->set_is_alive(false);
+    QColor color(255,255,255);
+    c->set_color(color);
 }
 
