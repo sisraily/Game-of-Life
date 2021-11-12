@@ -17,6 +17,8 @@ public:
     int get_x() const { return x_; }  // inline member function
     int get_y() const { return y_; }  // inline member function
 
+    void set_x(int x){this->x_ = x;}
+    void set_y(int y){this->y_ = y;}
     QRectF boundingRect() const override;
     QPainterPath shape() const override;
 

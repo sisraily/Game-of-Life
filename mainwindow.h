@@ -6,6 +6,7 @@
 #include <QGraphicsView>
 #include "bar.h"
 #include "cell.h"
+#include "qtimer.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
@@ -29,6 +30,10 @@ private slots:
     void CellSelectedLivesSlot(Cell *c);
     void CellSelectedDiesSlot(Cell *c);
 
+    void CalcNextValues();
+    int CalcLivePop();
+    void AddBar(int pop);
+
 private:
     Ui::MainWindow *ui;
     QGraphicsScene *cellsScene;
@@ -37,14 +42,23 @@ private:
 
     // Cells view will have a height of 20 cells and 10 rows of cells (200 total).
     // y coordinates
-    static const int y_cells_ = 10;
+    static const int y_cells_ = 20;
     // x coordinates
-    static const int x_cells_ = 20;
+    static const int x_cells_ = 30;
+    static const int max_num_bars_ = 37;
 
-    Bar * bars_[x_cells_][y_cells_];
     Cell * cells_[x_cells_][y_cells_];
+    Bar * bars_[max_num_bars_];
 
     int neighborsX_[8] = {1,-1,0,0,1,1,-1,-1};
     int neighborsY_[8] = {0,0,1,-1,1,-1,1,-1};
+
+    int turn_count_ = 0;
+    int total_pop_ = y_cells_ * x_cells_;
+
+    // keeps track number of bars in the bar graph area.
+    int num_bars_ = 0;
+
+    QTimer *timer = new QTimer(this);
 };
 #endif // MAINWINDOW_H

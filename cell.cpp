@@ -51,26 +51,30 @@ void Cell::mousePressEvent(QGraphicsSceneMouseEvent *event)
     qDebug() << "Next turn alive: " << this->get_next_turn_status();
     if(event->button() == Qt::RightButton){
         // cell dies or remains dead, if already dead.
-        emit CellSelectedDies(this);
 
-        // Change cell colors to white.
-        int r = 255;
-        int g = 255;
-        int b = 255;
-        QColor c(r, g, b);
-        color_ = c;
+//        this->set_is_alive(false);
+//        // Change cell colors to white.
+//        int r = 255;
+//        int g = 255;
+//        int b = 255;
+//        QColor c(r, g, b);
+//        color_ = c;
+
+        emit CellSelectedDies(this);
 
     }
     else if (event->button() == Qt::LeftButton){
         // Cell turns alive or stays alive, if already allive.
-        emit CellSelectedLives(this);
 
-        // Change cell colors to purple.
-        int r = 217;
-        int g = 130;
-        int b = 181;
-        QColor c(r, g, b);
-        color_ = c;
+
+//        this->set_is_alive(true);
+//        // Change cell colors to purple.
+//        int r = 217;
+//        int g = 130;
+//        int b = 181;
+//        QColor c(r, g, b);
+//        color_ = c;
+        emit CellSelectedLives(this);
 
     }
 
