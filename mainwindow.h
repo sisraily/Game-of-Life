@@ -8,6 +8,7 @@
 #include "cell.h"
 #include "qtimer.h"
 
+
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
 QT_END_NAMESPACE
@@ -33,6 +34,15 @@ private slots:
     void CalcNextValues();
     int CalcLivePop();
     void AddBar(int pop);
+
+    void on_colorButton1_clicked();
+
+    void on_colorButton2_clicked();
+
+    void on_colorButton3_clicked();
+
+signals:
+    void CellColorChange(int color);
 
 private:
     Ui::MainWindow *ui;
@@ -60,5 +70,7 @@ private:
     int num_bars_ = 0;
 
     QTimer *timer = new QTimer(this);
+
+    QColor cell_live_colors_ = QColor(217,130,181);
 };
 #endif // MAINWINDOW_H

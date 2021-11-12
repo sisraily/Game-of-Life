@@ -29,16 +29,15 @@ MainWindow::MainWindow(QWidget *parent)
     ui->speedSlider->setTracking(true);
 
     // slider range from slow to fast.
-    ui->speedSlider->setRange(0,100);
+    ui->speedSlider->setRange(1,10);
 
     // slider incrementation step value
     ui->speedSlider->setSingleStep(1);
 
     // sets default slider value
-    ui->speedSlider->setValue(25);
+    ui->speedSlider->setValue(1);
 
     connect(timer, &QTimer::timeout, this, QOverload<>::of(&MainWindow::on_stepButton_clicked));
-
 
     // QGraphicsView settings
     QGraphicsView * cellsView = ui->cellsView;
@@ -55,6 +54,8 @@ MainWindow::MainWindow(QWidget *parent)
             // connect custom signal to custom slot.
             connect(c, &Cell::CellSelectedDies, this, &MainWindow::CellSelectedDiesSlot);
             connect(c, &Cell::CellSelectedLives, this, &MainWindow::CellSelectedLivesSlot);
+            connect(this, &MainWindow::CellColorChange, c, &Cell::CellColorChangeSlot);
+
         }
     }
 
@@ -68,11 +69,15 @@ MainWindow::MainWindow(QWidget *parent)
     graphScene->setSceneRect(0,0,740,101);
 
     graphView->setScene(graphScene);
-
     // bar testing.
 
     this->AddBar(live_pop);
     this->CalcNextValues();
+
+
+
+
+
 
 }
 
@@ -106,11 +111,7 @@ void MainWindow::on_stepButton_clicked()
 
              cells_[i][j]->set_is_alive(cells_[i][j]->get_next_turn_status());
              if (cells_[i][j]->is_alive()){
-                 int r = 217;
-                 int g = 130;
-                 int b = 181;
-                 QColor c(r, g, b);
-                 cells_[i][j]->set_color(c);
+                 cells_[i][j]->set_color(cell_live_colors_);
              }
              else{
                  int r = 255;
@@ -141,6 +142,11 @@ void MainWindow::on_speedSlider_sliderMoved(int position)
     std::string s = "Speed: " + std::to_string(position);
     QString qs(s.c_str());
     ui->speedLabel->setText(qs);
+
+    // convert position to frames per second, so if position is 1, (11-1)*100 = 1000ms,
+    // if position is 10, we get 11-10(100) = 100ms per frame or 10 frames per second.
+    int frames = (11-position) * 100;
+    timer->setInterval(frames);
 }
 
 void MainWindow::CellSelectedLivesSlot(Cell *c){
@@ -166,16 +172,11 @@ void MainWindow::CalcNextValues(){
     /**************** Next values calculated here *******************/
     for (int i = 0; i < x_cells_; i++){
         for (int j = 0; j < y_cells_; j++){
-            // edge cells
-//            if (i == 0 || j == 0 || i == x_cells_-1 || j == y_cells_-1){
-//                continue;
-//            }
-//            else {
+
                 int x_coord = cells_[i][j]->get_x()/15;
                 int y_coord = cells_[i][j]->get_y()/15;
                 int neighbor_live_count = 0;
-//                qDebug() << "Cell: " << x_coord << ", " << y_coord;
-//                qDebug() << "Neighbors: ";
+
                 for(int i=0;i<8;i++)
                 {
                   // We only need to know max if three neihbors are alive.
@@ -280,3 +281,29 @@ void MainWindow::AddBar(int pop){
 
     }
 }
+
+void MainWindow::on_colorButton1_clicked()
+{
+    emit CellColorChange(1);
+    this->cell_live_colors_ = QColor(155,0,0);
+    cellsScene->update();
+}
+
+
+
+
+void MainWindow::on_colorButton2_clicked()
+{
+    emit CellColorChange(2);
+    this->cell_live_colors_ = QColor(0,155,0);
+    cellsScene->update();
+}
+
+
+void MainWindow::on_colorButton3_clicked()
+{
+    emit CellColorChange(3);
+    this->cell_live_colors_ = QColor(0,0,155);
+    cellsScene->update();
+}
+

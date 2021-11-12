@@ -45,7 +45,8 @@ protected:
 
 
 
-
+public slots:
+    void CellColorChangeSlot(int color);
 
 private:
 

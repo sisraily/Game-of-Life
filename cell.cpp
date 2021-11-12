@@ -31,7 +31,6 @@ Cell::Cell(const int x,const int y) {
       QColor c(r, g, b);
       this->color_ = c;
   }
-
   x_ = x*width_;
   y_ = y*width_;
 
@@ -50,35 +49,11 @@ void Cell::mousePressEvent(QGraphicsSceneMouseEvent *event)
     qDebug() << "Alive: " << this->is_alive();
     qDebug() << "Next turn alive: " << this->get_next_turn_status();
     if(event->button() == Qt::RightButton){
-        // cell dies or remains dead, if already dead.
-
-//        this->set_is_alive(false);
-//        // Change cell colors to white.
-//        int r = 255;
-//        int g = 255;
-//        int b = 255;
-//        QColor c(r, g, b);
-//        color_ = c;
-
         emit CellSelectedDies(this);
-
     }
     else if (event->button() == Qt::LeftButton){
-        // Cell turns alive or stays alive, if already allive.
-
-
-//        this->set_is_alive(true);
-//        // Change cell colors to purple.
-//        int r = 217;
-//        int g = 130;
-//        int b = 181;
-//        QColor c(r, g, b);
-//        color_ = c;
         emit CellSelectedLives(this);
-
     }
-
-    // update cell to change color.
     update();
 }
 
@@ -110,5 +85,44 @@ void Cell::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWid
 
     painter->drawRect(QRect(this->x_, this->y_, this->width_, this->width_));
     painter->setBrush(b);
+}
+
+
+void Cell::CellColorChangeSlot(int color){
+
+    if (this->is_alive()){
+        switch(color)
+        {
+            case 1: {
+                int r = 155;
+                int g = 0;
+                int b = 0;
+                QColor c(r, g, b);
+                this->color_ = c;
+                break;
+        }
+            case (2):
+        {
+                int r = 0;
+                int g = 155;
+                int b = 0;
+                QColor c(r, g, b);
+                this->color_ = c;
+                break;
+        }
+
+           case 3:
+        {
+                int r = 0;
+                int g = 0;
+                int b = 155;
+                QColor c(r, g, b);
+                this->color_ = c;
+                break;
+        }
+
+    }
+    }
+
 }
 
