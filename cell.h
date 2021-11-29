@@ -18,11 +18,17 @@ public:
     int get_y() const { return (y_); }  // inline member function
     bool is_alive() const { return is_alive_; } // inline member function
     void set_is_alive(bool result) { this->is_alive_ = result ; } // inline member function
-    void set_color(QColor color) { this->color_ = color; }
+    void set_color(QColor color) { this->color_ = color; } // inline member function. sets the color of a cell to the parameter.
 
+    /*
+     * Sets the next turn to either alive or dead.
+     * @param status alive=true, dead=false.
+     */
     void set_next_turn_status(bool status){this->next_turn_status_ = status;}
-    bool get_next_turn_status() const { return next_turn_status_; }
-    int get_total_alive() const {return total_alive_; }
+
+    bool get_next_turn_status() const { return next_turn_status_; } // inline member function.
+
+    int get_total_alive() const {return total_alive_; } // inline member function.
 
     QRectF boundingRect() const override;
     QPainterPath shape() const override;
@@ -34,7 +40,6 @@ public:
 
 
 signals:
-
     void CellSelectedDies(Cell *c);
     void CellSelectedLives(Cell *c);
 
@@ -47,6 +52,7 @@ protected:
 
 public slots:
     void CellColorChangeSlot(int color);
+    void CellAlphaChangeSlot(float alpha);
 
 private:
 

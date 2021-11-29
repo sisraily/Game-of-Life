@@ -43,6 +43,7 @@ private slots:
 
 signals:
     void CellColorChange(int color);
+    void CellAlphaChange(float alpha);
 
 private:
     Ui::MainWindow *ui;
@@ -54,7 +55,7 @@ private:
     // y coordinates
     static const int y_cells_ = 20;
     // x coordinates
-    static const int x_cells_ = 30;
+    static const int x_cells_ = 40;
     static const int max_num_bars_ = 37;
 
     Cell * cells_[x_cells_][y_cells_];
@@ -63,7 +64,10 @@ private:
     int neighborsX_[8] = {1,-1,0,0,1,1,-1,-1};
     int neighborsY_[8] = {0,0,1,-1,1,-1,1,-1};
 
+    // Keeps track of how many turns we've had in a given simulation.
     int turn_count_ = 0;
+
+    // Used to calculate percentage of population alive in a given turn
     int total_pop_ = y_cells_ * x_cells_;
 
     // keeps track number of bars in the bar graph area.

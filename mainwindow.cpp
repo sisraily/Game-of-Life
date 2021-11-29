@@ -12,7 +12,6 @@
 #include <QTimer>
 
 
-// Setting up bar.
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -55,6 +54,8 @@ MainWindow::MainWindow(QWidget *parent)
             connect(c, &Cell::CellSelectedDies, this, &MainWindow::CellSelectedDiesSlot);
             connect(c, &Cell::CellSelectedLives, this, &MainWindow::CellSelectedLivesSlot);
             connect(this, &MainWindow::CellColorChange, c, &Cell::CellColorChangeSlot);
+            connect(this, &MainWindow::CellAlphaChange, c, &Cell::CellAlphaChangeSlot);
+
 
         }
     }
@@ -90,22 +91,21 @@ MainWindow::~MainWindow()
 
 void MainWindow::on_playButton_clicked()
 {
-//    qDebug() << "play button clicked default slot!";
     timer->start(1000);
 }
 
 
 void MainWindow::on_pauseButton_clicked()
 {
-//    qDebug() << "pause button clicked default slot!";
     timer->stop();
 }
 
 
+/*
+ * Gets called whenever the step button is clicked.
+ */
 void MainWindow::on_stepButton_clicked()
 {
-//    qDebug() << "step button clicked default slot!";
-    /**************** Start turn ******************************************/
     for (int i = 0; i < x_cells_; i++){
         for (int j = 0; j < y_cells_; j++){
 
@@ -124,7 +124,6 @@ void MainWindow::on_stepButton_clicked()
         }
     }
 
-    /**************** end turn ********************************************/
     this->CalcNextValues();
     turn_count_ += 1;
     std::string s = "Turn: " + std::to_string(turn_count_);
@@ -136,7 +135,10 @@ void MainWindow::on_stepButton_clicked()
 
 }
 
-
+/* Changes frames per second based on slider position.
+ * @param position high number = more frames per second. A value from 1 to 10.
+ * 1 being 1 frame per ms, while 10 is 10 frames per ms.
+ */
 void MainWindow::on_speedSlider_sliderMoved(int position)
 {
     std::string s = "Speed: " + std::to_string(position);
@@ -149,6 +151,11 @@ void MainWindow::on_speedSlider_sliderMoved(int position)
     timer->setInterval(frames);
 }
 
+
+/*
+ * When slots receives a signal, the value of a cell is set to alive, and the color changes.
+ * @param cell A pointer to the cell we're changing the color to.
+ */
 void MainWindow::CellSelectedLivesSlot(Cell *c){
     c->set_is_alive(true);
     QColor color(217,130,181);
@@ -159,6 +166,10 @@ void MainWindow::CellSelectedLivesSlot(Cell *c){
 }
 
 
+/*
+ * When slots receives a signal, the value of a cell is set to dead, and the color changes to white.
+ * @param cell A pointer to the cell we're changing the color to.
+ */
 void MainWindow::CellSelectedDiesSlot(Cell *c){
     c->set_is_alive(false);
     QColor color(255,255,255);
@@ -168,8 +179,11 @@ void MainWindow::CellSelectedDiesSlot(Cell *c){
     CalcNextValues();
 }
 
+
+/*
+ * Calculates future values of a cell, and stores the result is the next turn status variable in each cell object.
+ */
 void MainWindow::CalcNextValues(){
-    /**************** Next values calculated here *******************/
     for (int i = 0; i < x_cells_; i++){
         for (int j = 0; j < y_cells_; j++){
 
@@ -179,9 +193,8 @@ void MainWindow::CalcNextValues(){
 
                 for(int i=0;i<8;i++)
                 {
+
                   // We only need to know max if three neihbors are alive.
-
-
                   int neighbor_x = x_coord + neighborsX_[i];
                   int neighbor_y = y_coord + neighborsY_[i];
 
@@ -200,14 +213,12 @@ void MainWindow::CalcNextValues(){
                       neighbor_y = 0;
                   }
 
-//                  qDebug() << "X: " << neighbor_x << ", Y: " << neighbor_y;
-//                  qDebug() << "Alive? " << cells_[neighbor_x][neighbor_y]->is_alive();
                   if (cells_[neighbor_x][neighbor_y]->is_alive()){
                       neighbor_live_count+=1;
                   }
 
                 }
-                // rule 4: overpoulation. Cell automatically dies when more than 3 neighbors are live.
+                //overpoulation. Cell automatically dies when more than 3 neighbors are live.
                 if (neighbor_live_count > 3){
                     cells_[i][j]->set_next_turn_status(false);
                 }
@@ -222,11 +233,9 @@ void MainWindow::CalcNextValues(){
                 else if (!(cells_[i][j]->is_alive()) && neighbor_live_count == 3){
                     cells_[i][j]->set_next_turn_status(true);
                 }
-//            }
         }
     }
 
-    /**************** END -- Next values calculated here *******************/
 }
 
 int MainWindow::CalcLivePop(){
@@ -242,22 +251,35 @@ int MainWindow::CalcLivePop(){
     float pct_alive = float(alive_tracker)/total_pop_;
 
     // set pct alive label
-    std::string s = "Population: " + std::to_string(alive_tracker) + " (" + std::to_string(pct_alive) + ")";
+    std::string s = "Population: " + std::to_string(alive_tracker) + " (" + std::to_string(pct_alive*100) + "%)";
     QString qs(s.c_str());
     ui->populationLabel->setText(qs);
-//    qDebug() << "alive tracker: " << alive_tracker/total_pop_;
 
-    // Feature 2 cases here. adjust color of cell based on pct of live vs dead cells.
-
+    /*** Feature 2 cases here. adjust color of cell based on pct of live vs dead cells. ***/
+    if (pct_alive < 0.25){
+        emit CellAlphaChange(.4);
+    }
+    else if (pct_alive < .50){
+        emit CellAlphaChange(.6);
+    }
+    else if(pct_alive < .75){
+        emit CellAlphaChange(.8);
+    }
+    else{
+        emit CellAlphaChange(1);
+    }
 
     return alive_tracker;
 }
 
+
+/*
+ * Adds a bar to the graph scene. The height of the bar depends on the population
+ * that is alive
+ * @param pop total population thats alive in a given turn.
+ */
 void MainWindow::AddBar(int pop){
     int bar_pct = int((float(pop)/float(total_pop_))*100);
-
-
-    // Fill up our scene width with bars, until we'vew reached the max number of bars.
     if(num_bars_ < max_num_bars_){
         int bar_x_loc = int(num_bars_ * 20);
         Bar *b = new Bar(bar_x_loc,int(100-bar_pct),100);
@@ -282,14 +304,17 @@ void MainWindow::AddBar(int pop){
     }
 }
 
+
+/*
+ * The three buttons below adjust the color of live cells,
+ * depending on what color buttons were clicked.
+ */
 void MainWindow::on_colorButton1_clicked()
 {
     emit CellColorChange(1);
     this->cell_live_colors_ = QColor(155,0,0);
     cellsScene->update();
 }
-
-
 
 
 void MainWindow::on_colorButton2_clicked()

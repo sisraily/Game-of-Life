@@ -19,6 +19,7 @@ public:
 
     void set_x(int x){this->x_ = x;}
     void set_y(int y){this->y_ = y;}
+
     QRectF boundingRect() const override;
     QPainterPath shape() const override;
 
@@ -33,13 +34,12 @@ private:
   int x_;
   int y_;
 
-
   QColor color_;
 
-  // Width stays the same.
+  // Width of bar always stays the same.
   static const int width_ = 20;
-  // height changes based on how many cells are live.
   int height_ = 0;
+
 };  // Class Bar
 
 

@@ -7,7 +7,8 @@
 #include "bar.h"
 
 /**
-  Creates a new cell object at these x, and y coordinates
+  Creates a new bar object at these x, and y coordinates.
+  The bar shows the percentage of popular alive in a current period.
   @param x int x coordinate
   @param y int y coordinate
 */
@@ -22,15 +23,14 @@ Bar::Bar(const int x, const int y, const int height) {
 
 
 
-// where is this object located
-// always a rectangle, Qt uses this to know "where" the user
-// would be interacting with this object
 QRectF Bar::boundingRect() const
 {
     return QRectF(x_, y_, width_, height_);
 }
 
-// define the actual shape of the object
+/*
+ * Defines the actual shape of the object
+*/
 QPainterPath Bar::shape() const
 {
     QPainterPath path;
@@ -38,7 +38,9 @@ QPainterPath Bar::shape() const
     return path;
 }
 
-// called by Qt to actually display the point
+/*
+ * Displays the bar
+*/
 void Bar::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
 {
     Q_UNUSED(widget);
